@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import {CORS_LINK, LOADING_API_MESSAGE, LOADING_URL_MESSAGE} from '../../constants/default-settings';
+import {CORS_LINK} from '../../constants/default-settings';
 
 const propTypes = {
-  onLoadDataApi: PropTypes.func.isRequired
+  onLoadDataHist: PropTypes.func.isRequired
 };
 
 const StyledDescription = styled.div`
@@ -72,71 +72,43 @@ const Error = ({error, url}) => (
   </StyledError>
 );
 
-class LoadDataApi extends Component {
+class LoadDataHist extends Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      dataUrl: ''
-    };
   }
   onMapUrlChange = e => {
-    // TODO: validate url
-    this.setState({
-      dataUrl: e.target.value
-    });
   };
 
-  onLoadDataApi = () => {
-    const dataUrls = ["https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv","https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv"];
-    const {dataUrl} = this.state;
-    if (!dataUrl) {
-      return;
-    }
+  onLoadDataHist = () => {
+    const dataUrls = ["https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/archived_data/archived_time_series/time_series_19-covid-Deaths_archived_0325.csv","https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/archived_data/archived_time_series/time_series_19-covid-Confirmed_archived_0325.csv"];
 
-
-    this.props.onLoadDataApi({dataUrls});
+    this.props.onLoadDataHist({dataUrls});
   };
 
   render() {
     return (
       <div>
         <InputForm>
-          <StyledDescription>Load data from an API (graphql or rest)</StyledDescription>
-          <StyledInputLabel>{LOADING_URL_MESSAGE}</StyledInputLabel>
+          <StyledDescription>Johns Hopkins Historical Data</StyledDescription>
+          <StyledInputLabel>Historical data archive, up to March 25, 2020</StyledInputLabel>
           <StyledInputLabel>
-            Examples:
+            Sources:
             <ul>
-              <li>https://your.map.url/graphql</li>
-              <li>http://your.map.url/v1/api/states</li>
+              <li>Deaths - https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/archived_data/archived_time_series/time_series_19-covid-Deaths_archived_0325.csv</li>
+              <li>Confirmed - https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/archived_data/archived_time_series/time_series_19-covid-Confirmed_archived_0325.csv</li>
             </ul>
           </StyledInputLabel>
-          <StyledInputLabel>
-            * CORS policy must be defined on your custom url domain in order to be accessible. For
-            more info{' '}
-            <a rel="noopener noreferrer" target="_blank" href={`${CORS_LINK}`}>
-              click here
-            </a>
-          </StyledInputLabel>
           <StyledFromGroup>
-            <StyledInput
-              onChange={this.onMapUrlChange}
-              type="text"
-              placeholder="File Url"
-              value={this.state.dataUrl}
-              error={this.props.error}
-            />
-            <StyledBtn type="submit" onClick={this.onLoadDataApi}>
+            <StyledBtn type="submit" onClick={this.onLoadDataHist}>
               Fetch
             </StyledBtn>
           </StyledFromGroup>
-          {this.props.error && <Error error={this.props.error} url={this.props.option.dataUrl} />}
         </InputForm>
       </div>
     );
   }
 }
 
-LoadDataApi.propTypes = propTypes;
+LoadDataHist.propTypes = propTypes;
 
-export default LoadDataApi;
+export default LoadDataHist;

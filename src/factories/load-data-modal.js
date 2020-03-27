@@ -25,9 +25,10 @@ import {LOADING_METHODS} from '../constants/default-settings';
 import SampleMapGallery from '../components/load-data-modal/sample-data-viewer';
 import LoadRemoteMap from '../components/load-data-modal/load-remote-map';
 import SampleMapsTab from '../components/load-data-modal/sample-maps-tab';
-import LoadDataApi from '../components/load-data-modal/load-data-api';
+import LoadDataHist from '../components/load-data-modal/load-data-hist';
+import LoadDataCounties from '../components/load-data-modal/load-data-counties';
 
-import {loadRemoteMap, loadDataApi, loadSample, loadSampleConfigurations} from '../actions';
+import {loadRemoteMap, loadDataHist, loadDataCounties, loadSample, loadSampleConfigurations} from '../actions';
 
 const additionalMethods = {
   remote: {
@@ -35,11 +36,17 @@ const additionalMethods = {
     label: 'Load Map using URL',
     elementType: LoadRemoteMap
   },
-  api: {
-    id: LOADING_METHODS.api,
-    label: 'Data using api',
-    elementType: LoadDataApi
+  hist: {
+    id: LOADING_METHODS.hist,
+    label: 'Johns Hopkins Historical',
+    elementType: LoadDataHist
   },
+  counties: {
+    id: LOADING_METHODS.counties,
+    label: 'Johns Hopkins Latest (Counties)',
+    elementType: LoadDataCounties
+  },
+ 
   sample: {
     id: LOADING_METHODS.sample,
     label: 'Sample Maps',
@@ -56,18 +63,20 @@ const CustomLoadDataModalFactory = (...deps) => {
   LoadDataModal.defaultProps = {
     ...LoadDataModal.defaultProps,
     loadingMethods: [
-      defaultLoadingMethods.find(lm => lm.id === 'upload'),
-      additionalMethods.remote,
-      additionalMethods.api,
-      defaultLoadingMethods.find(lm => lm.id === 'storage'),
-      additionalMethods.sample
+//      defaultLoadingMethods.find(lm => lm.id === 'upload'),
+//      additionalMethods.remote,
+      additionalMethods.hist,
+      additionalMethods.counties,
+//      defaultLoadingMethods.find(lm => lm.id === 'storage'),
+//      additionalMethods.sample
     ]
   };
 
   return withState([], state => ({...state.demo.app}), {
     onLoadSample: loadSample,
     onLoadRemoteMap: loadRemoteMap,
-    onLoadDataApi: loadDataApi,
+    onLoadDataHist: loadDataHist,
+    onLoadDataCounties: loadDataCounties,
     loadSampleConfigurations
   })(LoadDataModal);
 };

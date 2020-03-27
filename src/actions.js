@@ -122,6 +122,69 @@ function detectResponseError(response) {
   }
 }
 
+
+function joinFiles(rawData){
+
+  var date1 = new Date("03/23/2020"); 
+  const file1Array = csvParseRows(rawData[0][0]);
+
+  const header =  file1Array[0];
+
+  var joinFile= header[0] + "," +
+    header[1] + "," +
+    header[2] + "," +
+    header[3] + "," +
+    header[4] + "," +
+    header[5] + "," +
+    "Long" + "," +
+    header[7] + "," +
+    header[8] + "," +
+    header[9] + "," +
+    header[10] + "," +
+    header[11] + "," +
+    "date\n";
+
+  //files
+  for(var i = 0; i<rawData.length-1; i++){
+
+    const file = csvParseRows(rawData[i][0]);
+    var dd = date1.getDate();
+
+    var mm = date1.getMonth()+1; 
+    const yyyy = date1.getFullYear();
+
+    if(dd<10) 
+    {
+      dd=`0${dd}`;
+    } 
+
+    if(mm<10) 
+    {
+      mm=`0${mm}`;
+    } 
+    const dateString = `${mm},${dd},${yyyy}`;
+
+    date1.setDate(date1.getDate() + 1)
+
+    //rows
+    for(var k = 1; k<file.length; k++){
+    //console.log(confirmedRow.length == deathsRow.length);
+      const row = file[k];
+
+      //columns
+      for(var j = 0; j<row.length; j++){
+        joinFile = joinFile + "\"" + row[j] + "\",";
+      }
+      const dateValue = new Date(dateString).getTime();
+      joinFile = joinFile + "\"" + dateValue + "\""  +"\n";
+    }
+  }
+
+  return joinFile;
+}
+
+
+
 function denormalize(rawData){
 
   const deathsArray = csvParseRows(rawData[0][0]);
@@ -137,7 +200,7 @@ function denormalize(rawData){
   var denormFile = header[0] + "," +
     header[1] + "," +
     header[2] + "," +
-    header[3] + ",date,deaths,confirmed\n";
+    header[3] + ",date,Deaths,Confirmed\n";
 
   for(var i = 1; i<deathsArray.length; i++){
     const deathsRow = deathsArray[i];
@@ -162,7 +225,6 @@ function denormalize(rawData){
   return denormFile;
 }
 
-/*
 var config = {
   "version": "v1",
   "config": {
@@ -170,172 +232,7 @@ var config = {
       "filters": [
         {
           "dataId": [
-            "z973szon"
-          ],
-          "id": "fwo160tlq",
-          "name": [
-            "date"
-          ],
-          "type": "timeRange",
-          "value": [
-            1584935998000,
-            1584936000000
-          ],
-          "enlarged": false,
-          "plotType": "histogram",
-          "yAxis": null
-        }
-      ],
-      "layers": [
-        {
-          "id": "xu97t",
-          "type": "grid",
-          "config": {
-            "dataId": "z973szon",
-            "label": "C",
-            "color": [
-              183,
-              136,
-              94
-            ],
-            "columns": {
-              "lat": "Lat",
-              "lng": "Long"
-            },
-            "isVisible": true,
-            "visConfig": {
-              "opacity": 0.8,
-              "worldUnitSize": 56.1948,
-              "colorRange": {
-                "name": "ColorBrewer PuRd-6",
-                "type": "sequential",
-                "category": "ColorBrewer",
-                "colors": [
-                  "#f1eef6",
-                  "#d4b9da",
-                  "#c994c7",
-                  "#df65b0",
-                  "#dd1c77",
-                  "#980043"
-                ]
-              },
-              "coverage": 1,
-              "sizeRange": [
-                0,
-                500
-              ],
-              "percentile": [
-                0,
-                100
-              ],
-              "elevationPercentile": [
-                0,
-                100
-              ],
-              "elevationScale": 73.6,
-              "colorAggregation": "average",
-              "sizeAggregation": "average",
-              "enable3d": true
-            },
-            "textLabel": [
-              {
-                "field": null,
-                "color": [
-                  255,
-                  255,
-                  255
-                ],
-                "size": 18,
-                "offset": [
-                  0,
-                  0
-                ],
-                "anchor": "start",
-                "alignment": "center"
-              }
-            ]
-          },
-          "visualChannels": {
-            "colorField": {
-              "name": "deaths",
-              "type": "integer"
-            },
-            "colorScale": "quantize",
-            "sizeField": {
-              "name": "confirmed",
-              "type": "integer"
-            },
-            "sizeScale": "linear"
-          }
-        }
-      ],
-      "interactionConfig": {
-        "tooltip": {
-          "fieldsToShow": {
-            "z973szon": [
-              "Province/State",
-              "Country/Region",
-              "date",
-              "deaths",
-              "confirmed"
-            ]
-          },
-          "enabled": true
-        },
-        "brush": {
-          "size": 0.5,
-          "enabled": false
-        },
-        "coordinate": {
-          "enabled": false
-        }
-      },
-      "layerBlending": "normal",
-      "splitMaps": [],
-      "animationConfig": {
-        "currentTime": null,
-        "speed": 1
-      }
-    },
-    "mapState": {
-      "bearing": -26.490716180371347,
-      "dragRotate": true,
-      "latitude": -3.9705927063359883,
-      "longitude": -14.068059941032061,
-      "pitch": 48.64265924285642,
-      "zoom": 1.5359584938549715,
-      "isSplit": false
-    },
-    "mapStyle": {
-      "styleType": "dark",
-      "topLayerGroups": {},
-      "visibleLayerGroups": {
-        "label": true,
-        "road": true,
-        "border": true,
-        "building": true,
-        "water": true,
-        "land": true,
-        "3d building": false
-      },
-      "threeDBuildingColor": [
-        9.665468314072013,
-        17.18305478057247,
-        31.1442867897876
-      ],
-      "mapStyles": {}
-    }
-  }
-};
-*/
-var config = {
-  "version": "v1",
-  "config": {
-    "visState": {
-      "filters": [
-        {
-          "dataId": [
-            "cky56bma"
+            "xip2xquoi"
           ],
           "id": "a1ly9ol7",
           "name": [
@@ -343,10 +240,30 @@ var config = {
           ],
           "type": "timeRange",
           "value": [
-            1583689524000,
-            1583935011000
+            1583666701200,
+            1583752395000
           ],
           "enlarged": true,
+          "plotType": "lineChart",
+          "yAxis": {
+            "name": "Confirmed",
+            "type": "integer"
+          }
+        },
+        {
+          "dataId": [
+            "xip2xquoi"
+          ],
+          "id": "an323nr8",
+          "name": [
+            "Confirmed"
+          ],
+          "type": "range",
+          "value": [
+            1,
+            67800
+          ],
+          "enlarged": false,
           "plotType": "histogram",
           "yAxis": null
         }
@@ -356,8 +273,8 @@ var config = {
           "id": "40120svc",
           "type": "point",
           "config": {
-            "dataId": "cky56bma",
-            "label": "new layer",
+            "dataId": "xip2xquoi",
+            "label": "Deaths",
             "color": [
               227,
               26,
@@ -432,22 +349,95 @@ var config = {
             "strokeColorField": null,
             "strokeColorScale": "quantile",
             "sizeField": {
-              "name": "confirmed",
+              "name": "Deaths",
               "type": "integer"
             },
             "sizeScale": "sqrt"
+          }
+        },
+        {
+          "id": "l2moamb",
+          "type": "hexagon",
+          "config": {
+            "dataId": "xip2xquoi",
+            "label": "Confirmed",
+            "color": [
+              218,
+              112,
+              191
+            ],
+            "columns": {
+              "lat": "Lat",
+              "lng": "Long"
+            },
+            "isVisible": true,
+            "visConfig": {
+              "opacity": 0.8,
+              "worldUnitSize": 15,
+              "resolution": 8,
+              "colorRange": {
+                "name": "Custom Palette",
+                "type": "custom",
+                "category": "Custom",
+                "colors": [
+                  "#E3611C"
+                ]
+              },
+              "coverage": 1,
+              "sizeRange": [
+                0,
+                500
+              ],
+              "percentile": [
+                0,
+                100
+              ],
+              "elevationPercentile": [
+                0,
+                100
+              ],
+              "elevationScale": 45.9,
+              "colorAggregation": "count",
+              "sizeAggregation": "sum",
+              "enable3d": true
+            },
+            "textLabel": [
+              {
+                "field": null,
+                "color": [
+                  255,
+                  255,
+                  255
+                ],
+                "size": 18,
+                "offset": [
+                  0,
+                  0
+                ],
+                "anchor": "start",
+                "alignment": "center"
+              }
+            ]
+          },
+          "visualChannels": {
+            "colorField": null,
+            "colorScale": "quantile",
+            "sizeField": {
+              "name": "Confirmed",
+              "type": "integer"
+            },
+            "sizeScale": "linear"
           }
         }
       ],
       "interactionConfig": {
         "tooltip": {
           "fieldsToShow": {
-            "cky56bma": [
+            "xip2xquoi": [
               "Province/State",
               "Country/Region",
-              "Lat",
-              "Long",
-              "date"
+              "Deaths",
+              "Confirmed"
             ]
           },
           "enabled": true
@@ -468,12 +458,12 @@ var config = {
       }
     },
     "mapState": {
-      "bearing": -26.490716180371347,
+      "bearing": -31.86206896551724,
       "dragRotate": true,
-      "latitude": -2.5444437451708134e-14,
-      "longitude": -51.04417186162186,
-      "pitch": 48.64265924285642,
-      "zoom": 0.6528448596347944,
+      "latitude": 11.36614176106782,
+      "longitude": -7.7873970525801015,
+      "pitch": 49.527153356405194,
+      "zoom": 1.6236921453508306,
       "isSplit": false
     },
     "mapStyle": {
@@ -496,9 +486,90 @@ var config = {
       "mapStyles": {}
     }
   }
-};
+}
 
-export function loadDataApi(options) {
+
+export function loadDataCounties(options) {
+  return (dispatch, getState) => {
+    var stateGetter = getState
+    dispatch(setLoadingMapStatus(true));
+    // breakdown url into url+query params
+    var promiseArray = [];
+    
+    options.dataUrls.forEach(x => promiseArray.push(loadRemoteRawData(x)));
+    promiseArray.push(getState);
+    Promise.all(promiseArray).then(
+      // In this part we turn the response into a FileBlob
+      // so we can use it to call loadFiles
+      (rawData) => {
+
+        const file = joinFiles(rawData);
+        dispatch(loadFiles([new File([file], "COVID-19.csv")])).then(() => {
+
+         // const datasetId= "COVID"
+
+          debugger;
+          const datasetId = Object.keys(getState().demo.keplerGl.map.visState.datasets)[0];
+          const dataset =  getState().demo.keplerGl.map.visState.datasets[datasetId];
+
+          var data = {
+            fields: dataset.fields, 
+            rows: dataset.allData 
+          };
+
+          var datasets = [{
+            data: data,
+            info: {
+             format: "csv",
+             id: datasetId,
+             label: "COVID-19.csv"
+            }
+          }]
+
+          //datasets = datasets[Object.keys(datasets)[0]]
+          //datasets = [{[datasetId] : datasets }]
+          //datasets[0][datasetId].id = datasetId
+
+
+
+          console.log(getState().demo.keplerGl.map.visState)
+          config.config.visState.layers = config.config.visState.layers.map(x => {
+            x.config.dataId = datasetId; 
+            return x
+          })
+          config.config.visState.filters = config.config.visState.filters.map(x => {
+            x.dataId = datasetId ; 
+            return x
+          })
+          config.config.visState.interactionConfig.tooltip.fieldsToShow = {
+            [datasetId]: [
+              "Province/State",
+              "Country/Region",
+              "Deaths",
+              "Confirmed"
+            ]
+          },
+
+          console.log(config);
+          dispatch(addDataToMap({config, datasets})).then(()=>{
+            console.log(getState().demo.keplerGl.map.visState)
+            dispatch(setLoadingMapStatus(false))
+          });
+        }
+        );
+      },
+      error => {
+        const {target = {}} = error;
+        const {status, responseText} = target;
+        dispatch(loadRemoteResourceError({status, message: responseText}, options.dataUrl));
+      }
+    );
+  };
+}
+
+
+
+export function loadDataHist(options) {
   return (dispatch, getState) => {
     var stateGetter = getState
     dispatch(setLoadingMapStatus(true));
@@ -549,8 +620,8 @@ export function loadDataApi(options) {
             [datasetId]: [
               "Province/State",
               "Country/Region",
-              "deaths",
-              "confirmed"
+              "Deaths",
+              "Confirmed"
             ]
           },
 
