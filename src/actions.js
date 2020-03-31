@@ -24,6 +24,8 @@ import {push} from 'react-router-redux';
 import {request, text as requestText, json as requestJson} from 'd3-request';
 import {addDataToMap, loadFiles, toggleModal} from 'kepler.gl/actions';
 
+
+
 import {
   LOADING_SAMPLE_ERROR_MESSAGE,
   LOADING_SAMPLE_LIST_ERROR_MESSAGE,
@@ -127,6 +129,7 @@ function joinFiles(rawData){
 
   var date1 = new Date("03/23/2020"); 
   const file1Array = csvParseRows(rawData[0][0]);
+  const geoJsonMap = rawData[rawData.length-2];
 
   const header =  file1Array[0];
 
@@ -142,10 +145,11 @@ function joinFiles(rawData){
     header[9] + "," +
     header[10] + "," +
     header[11] + "," +
+    "geojson," +
     "date\n";
 
   //files
-  for(var i = 0; i<rawData.length-1; i++){
+  for(var i = 0; i<rawData.length-2; i++){
 
     const file = csvParseRows(rawData[i][0]);
     var dd = date1.getDate();
@@ -171,14 +175,24 @@ function joinFiles(rawData){
     //console.log(confirmedRow.length == deathsRow.length);
       const row = file[k];
 
+      const geojson = geoJsonMap[row[0]]
       //columns
       for(var j = 0; j<row.length; j++){
         joinFile = joinFile + "\"" + row[j] + "\",";
+      }      
+      if (geojson != null){
+        joinFile = joinFile + "\"" + geojson.replace(/\"/g, "\"\"") + "\",";
+      }else{
+        joinFile = joinFile + ",";
       }
+
+      //joinFile = joinFile + "\"" + "{\"\"type\"\": \"\"LineString\"\",\"\"coordinates\"\": [[-58.3867141, -34.6016724], [-58.388046, -34.601724], [-58.3895469, -34.6018105], [-58.3894607, -34.6030247], [-58.3894148, -34.6041908], [-58.3894125, -34.6042488], [-58.3893415, -34.6054426], [-58.3893196, -34.6066263], [-58.3892645, -34.6078317], [-58.3891868, -34.609105], [-58.389166, -34.6092809], [-58.3890649, -34.610095], [-58.3889687, -34.6112764], [-58.3889168, -34.6124787], [-58.3903475, -34.6125322], [-58.3903555, -34.6137279], [-58.3903758, -34.614812], [-58.3903721, -34.6156194]]}" + "\",";
+
       const dateValue = new Date(dateString).getTime();
       joinFile = joinFile + "\"" + dateValue + "\""  +"\n";
     }
   }
+
 
   return joinFile;
 }
@@ -225,7 +239,7 @@ function denormalize(rawData){
   return denormFile;
 }
 
-var config = {
+const config1 = {
   "version": "v1",
   "config": {
     "visState": {
@@ -489,15 +503,325 @@ var config = {
 }
 
 
+const config2 = {
+  "version": "v1",
+  "config": {
+    "visState": {
+      "filters": [
+        {
+          "dataId": [
+            "foez3ydok"
+          ],
+          "id": "a1ly9ol7",
+          "name": [
+            "date"
+          ],
+          "type": "timeRange",
+          "value": [
+            1585100160000,
+            1585186144000
+          ],
+          "enlarged": true,
+          "plotType": "lineChart",
+          "yAxis": {
+            "name": "Confirmed",
+            "type": "integer"
+          }
+        },
+        {
+          "dataId": [
+            "foez3ydok"
+          ],
+          "id": "an323nr8",
+          "name": [
+            "Confirmed"
+          ],
+          "type": "range",
+          "value": [
+            1,
+            67800
+          ],
+          "enlarged": false,
+          "plotType": "histogram",
+          "yAxis": null
+        }
+      ],
+      "layers": [
+        {
+          "id": "5vj17vi",
+          "type": "geojson",
+          "config": {
+            "dataId": "foez3ydok",
+            "label": "Deaths",
+            "color": [
+              227,
+              26,
+              26
+            ],
+            "columns": {
+              "geojson": "geojson"
+            },
+            "isVisible": true,
+            "visConfig": {
+              "opacity": 0.8,
+              "strokeOpacity": 0.8,
+              "thickness": 2,
+              "strokeColor": null,
+              "colorRange": {
+                "name": "Global Warming",
+                "type": "sequential",
+                "category": "Uber",
+                "colors": [
+                  "#5A1846",
+                  "#900C3F",
+                  "#C70039",
+                  "#E3611C",
+                  "#F1920E",
+                  "#FFC300"
+                ]
+              },
+              "strokeColorRange": {
+                "name": "Global Warming",
+                "type": "sequential",
+                "category": "Uber",
+                "colors": [
+                  "#5A1846",
+                  "#900C3F",
+                  "#C70039",
+                  "#E3611C",
+                  "#F1920E",
+                  "#FFC300"
+                ]
+              },
+              "radius": 10,
+              "sizeRange": [
+                0,
+                10
+              ],
+              "radiusRange": [
+                0,
+                50
+              ],
+              "heightRange": [
+                0,
+                500
+              ],
+              "elevationScale": 5,
+              "stroked": true,
+              "filled": false,
+              "enable3d": false,
+              "wireframe": false
+            },
+            "textLabel": [
+              {
+                "field": null,
+                "color": [
+                  255,
+                  255,
+                  255
+                ],
+                "size": 18,
+                "offset": [
+                  0,
+                  0
+                ],
+                "anchor": "start",
+                "alignment": "center"
+              }
+            ]
+          },
+          "visualChannels": {
+            "colorField": null,
+            "colorScale": "quantile",
+            "sizeField": {
+              "name": "Deaths",
+              "type": "integer"
+            },
+            "sizeScale": "sqrt",
+            "strokeColorField": null,
+            "strokeColorScale": "quantile",
+            "heightField": null,
+            "heightScale": "linear",
+            "radiusField": null,
+            "radiusScale": "linear"
+          }
+        },
+        {
+          "id": "3m3grw8",
+          "type": "geojson",
+          "config": {
+            "dataId": "foez3ydok",
+            "label": "Confirmed",
+            "color": [
+              255,
+              152,
+              51
+            ],
+            "columns": {
+              "geojson": "geojson"
+            },
+            "isVisible": true,
+            "visConfig": {
+              "opacity": 0.8,
+              "strokeOpacity": 0.8,
+              "thickness": 0.5,
+              "strokeColor": null,
+              "colorRange": {
+                "name": "ColorBrewer Reds-6",
+                "type": "singlehue",
+                "category": "ColorBrewer",
+                "colors": [
+                  "#fee5d9",
+                  "#fcbba1",
+                  "#fc9272",
+                  "#fb6a4a",
+                  "#de2d26",
+                  "#a50f15"
+                ]
+              },
+              "strokeColorRange": {
+                "name": "Global Warming",
+                "type": "sequential",
+                "category": "Uber",
+                "colors": [
+                  "#5A1846",
+                  "#900C3F",
+                  "#C70039",
+                  "#E3611C",
+                  "#F1920E",
+                  "#FFC300"
+                ]
+              },
+              "radius": 10,
+              "sizeRange": [
+                0,
+                10
+              ],
+              "radiusRange": [
+                0,
+                50
+              ],
+              "heightRange": [
+                0,
+                500
+              ],
+              "elevationScale": 45.9,
+              "stroked": true,
+              "filled": true,
+              "enable3d": true,
+              "wireframe": false
+            },
+            "textLabel": [
+              {
+                "field": null,
+                "color": [
+                  255,
+                  255,
+                  255
+                ],
+                "size": 18,
+                "offset": [
+                  0,
+                  0
+                ],
+                "anchor": "start",
+                "alignment": "center"
+              }
+            ]
+          },
+          "visualChannels": {
+            "colorField": {
+              "name": "Confirmed",
+              "type": "integer"
+            },
+            "colorScale": "quantile",
+            "sizeField": {
+              "name": "Confirmed",
+              "type": "integer"
+            },
+            "sizeScale": "linear",
+            "strokeColorField": null,
+            "strokeColorScale": "quantile",
+            "heightField": {
+              "name": "Confirmed",
+              "type": "integer"
+            },
+            "heightScale": "linear",
+            "radiusField": null,
+            "radiusScale": "linear"
+          }
+        }
+      ],
+      "interactionConfig": {
+        "tooltip": {
+          "fieldsToShow": {
+            "foez3ydok": [
+              "Deaths",
+              "Confirmed"
+            ]
+          },
+          "enabled": true
+        },
+        "brush": {
+          "size": 0.5,
+          "enabled": false
+        },
+        "coordinate": {
+          "enabled": false
+        }
+      },
+      "layerBlending": "normal",
+      "splitMaps": [],
+      "animationConfig": {
+        "currentTime": null,
+        "speed": 1
+      }
+    },
+    "mapState": {
+      "bearing": -28.536945812807875,
+      "dragRotate": true,
+      "latitude": 36.32759078708474,
+      "longitude": -83.72159062521017,
+      "pitch": 55.33850766542787,
+      "zoom": 4.164134380159623,
+      "isSplit": false
+    },
+    "mapStyle": {
+      "styleType": "dark",
+      "topLayerGroups": {},
+      "visibleLayerGroups": {
+        "label": true,
+        "road": true,
+        "border": true,
+        "building": true,
+        "water": true,
+        "land": true,
+        "3d building": false
+      },
+      "threeDBuildingColor": [
+        9.665468314072013,
+        17.18305478057247,
+        31.1442867897876
+      ],
+      "mapStyles": {}
+    }
+  }
+}
+
 export function loadDataCounties(options) {
   return (dispatch, getState) => {
     var stateGetter = getState
     dispatch(setLoadingMapStatus(true));
     // breakdown url into url+query params
     var promiseArray = [];
+
+    var y = {};
+    options.fipsGeoJson.features.forEach(x => y[x.id] = JSON.stringify(x.geometry))
     
     options.dataUrls.forEach(x => promiseArray.push(loadRemoteRawData(x)));
+    promiseArray.push(y);
     promiseArray.push(getState);
+
     Promise.all(promiseArray).then(
       // In this part we turn the response into a FileBlob
       // so we can use it to call loadFiles
@@ -508,7 +832,6 @@ export function loadDataCounties(options) {
 
          // const datasetId= "COVID"
 
-          debugger;
           const datasetId = Object.keys(getState().demo.keplerGl.map.visState.datasets)[0];
           const dataset =  getState().demo.keplerGl.map.visState.datasets[datasetId];
 
@@ -532,7 +855,7 @@ export function loadDataCounties(options) {
 
 
 
-          console.log(getState().demo.keplerGl.map.visState)
+          var config = config2;
           config.config.visState.layers = config.config.visState.layers.map(x => {
             x.config.dataId = datasetId; 
             return x
@@ -607,7 +930,7 @@ export function loadDataHist(options) {
 
 
 
-          console.log(getState().demo.keplerGl.map.visState)
+          var config = config1;
           config.config.visState.layers = config.config.visState.layers.map(x => {
             x.config.dataId = datasetId; 
             return x
@@ -626,10 +949,13 @@ export function loadDataHist(options) {
           },
 
           console.log(config);
+
           dispatch(addDataToMap({config, datasets})).then(()=>{
             console.log(getState().demo.keplerGl.map.visState)
             dispatch(setLoadingMapStatus(false))
           });
+          dispatch(setLoadingMapStatus(false))
+
         }
         );
       },

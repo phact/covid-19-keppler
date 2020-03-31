@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import {CORS_LINK} from '../../constants/default-settings';
+import fipsGeoJson from '../../data/fips-geojson';
 
 const propTypes = {
   onLoadDataCounties: PropTypes.func.isRequired
@@ -116,7 +117,8 @@ class LoadDataCounties extends Component {
       date1.setDate(date1.getDate() + 1)
     }
 
-    this.props.onLoadDataCounties({dataUrls});
+    const options = {dataUrls: dataUrls, fipsGeoJson: fipsGeoJson}
+    this.props.onLoadDataCounties(options);
 
   };
 
